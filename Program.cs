@@ -2,13 +2,28 @@
 using Spring_2020_Class_Project.Classes;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
+using System.Text.Json;
 
 
 namespace Spring_2020_Class_Project
 {
     class Program
     {
-        static List<Student> studentsList = new List<Student>();
+
+        static string _studentRepositoryPath = $"{AppDomain.CurrentDomain.BaseDirectory}\\students.json";
+        public static List<Student> studentsList = File.Exists(_studentRepositoryPath) ? Read() : new List<Student>();
+          static void Save()
+        {
+            using (var file = File.CreateText(_studentRepositoryPath))
+            {
+                file.WriteAsync(JsonSerializer.Serialize(studentsList));
+            }
+        }
+
+         static List<Student> Read() {
+            return  JsonSerializer.Deserialize<List<Student>>(File.ReadAllText(_studentRepositoryPath));
+        }
         static void Main(string[] args)
         {
 
@@ -93,12 +108,16 @@ namespace Spring_2020_Class_Project
             }
             Console.WriteLine("Enter First Name");
             var studentFirstName = Console.ReadLine();
+            student.FirstName = studentFirstName;
             Console.WriteLine("Enter Last Name");
             var studentLastName = Console.ReadLine();
+            student.LastName = studentLastName;
             Console.WriteLine("Enter Class Name");
             var className = Console.ReadLine();
+            student.ClassName = className;
             Console.WriteLine("Enter Last Class Completed");
             var lastClass = Console.ReadLine();
+            student.LastClassCompleted = lastClass;
             while (true)
             {
                 Console.WriteLine("Enter Last Class Completed Date in format MM/dd/YYYY");
@@ -120,6 +139,7 @@ namespace Spring_2020_Class_Project
                 }
             }
             studentsList.Add(student);
+            Save();
         }
     }
 }
